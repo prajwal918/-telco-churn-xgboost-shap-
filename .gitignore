@@ -1,0 +1,26 @@
+# R / RStudio artifacts
+.Rhistory
+.Rdata
+.RData
+.Rproj.user/
+*.Rproj
+
+# Plots (auto-generated)
+Rplots.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+.dockerignore
+
+# Compiled
+*.o
+*.so
+*.dll

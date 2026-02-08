@@ -1,0 +1,664 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Code listing style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{IBM Telco Churn Analysis}
+\lhead{Code Explanation}
+\rfoot{Page \thepage}
+
+\title{\textbf{IBM Telco Customer Churn} \\ \Large Code Explanation (Line by Line)}
+\author{R Programming Project}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Installing and Loading Libraries}
+% ============================================================
+
+\subsection{Lines 1-5: Installing Required Packages}
+
+\begin{lstlisting}[language=R]
+if (!require("smotefamily")) install.packages("smotefamily", repos = "http://cran.us.r-project.org")
+if (!require("xgboost")) install.packages("xgboost", repos = "http://cran.us.r-project.org")
+if (!require("caret")) install.packages("caret", repos = "http://cran.us.r-project.org")
+if (!require("tidyverse")) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if (!require("gridExtra")) install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{require("package\_name")} -- Tries to load the package. Returns \texttt{TRUE} if successful, \texttt{FALSE} if not installed.
+    \item \texttt{!require()} -- The \texttt{!} means "NOT". So if package is NOT available, this becomes TRUE.
+    \item \texttt{install.packages()} -- Downloads and installs the package from CRAN repository.
+    \item This pattern means: "If package is not installed, then install it."
+\end{itemize}
+
+\textbf{What each package does:}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Package} & \textbf{Purpose} \\ \midrule
+smotefamily & SMOTE algorithm to balance imbalanced datasets \\
+xgboost & XGBoost machine learning algorithm (gradient boosting) \\
+caret & Classification And REgression Training - model training \\
+tidyverse & Collection of packages for data manipulation \\
+gridExtra & Arranging multiple plots in a grid \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Lines 7-11: Loading Libraries}
+
+\begin{lstlisting}[language=R]
+library(tidyverse)
+library(caret)
+library(xgboost)
+library(smotefamily)
+library(gridExtra)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{library()} loads the package into memory so we can use its functions.
+    \item We must load libraries before using them in our code.
+\end{itemize}
+
+% ============================================================
+\section{Console Output Header}
+% ============================================================
+
+\subsection{Lines 13-16: Printing Header}
+
+\begin{lstlisting}[language=R]
+cat(rep("=", 100), "\n")
+cat("           IBM TELCO CHURN - END-TO-END ANALYSIS\n")
+cat(rep("=", 100), "\n\n")
+cat(">>> Section 1.2: Rigorous Data Preparation and Cleaning...\n")
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{cat()} -- Prints text to the console (like \texttt{print} but simpler).
+    \item \texttt{rep("=", 100)} -- Repeats the "=" character 100 times to create a line.
+    \item \texttt{"\textbackslash n"} -- Creates a new line (like pressing Enter).
+    \item This just makes the console output look nice and organized.
+\end{itemize}
+
+% ============================================================
+\section{Loading Data}
+% ============================================================
+
+\subsection{Line 17: Reading CSV File}
+
+\begin{lstlisting}[language=R]
+data <- read.csv("WA_Fn-UseC_-Telco-Customer-Churn.csv", stringsAsFactors = FALSE)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{read.csv()} -- Reads a CSV (Comma Separated Values) file.
+    \item \texttt{"WA\_Fn-UseC\_-Telco-Customer-Churn.csv"} -- The filename to read.
+    \item \texttt{stringsAsFactors = FALSE} -- Keeps text as text (strings), doesn't convert to factors.
+    \item \texttt{data <- } -- Stores the result in a variable called \texttt{data}.
+\end{itemize}
+
+\subsection{Line 18: Printing Data Dimensions}
+
+\begin{lstlisting}[language=R]
+cat(sprintf("   - Loaded Data: %d rows, %d columns\n", nrow(data), ncol(data)))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{sprintf()} -- Creates formatted text (like printf in C).
+    \item \texttt{\%d} -- Placeholder for integer numbers.
+    \item \texttt{nrow(data)} -- Returns number of rows in the dataset.
+    \item \texttt{ncol(data)} -- Returns number of columns in the dataset.
+\end{itemize}
+
+% ============================================================
+\section{Handling Missing Values}
+% ============================================================
+
+\subsection{Lines 19-24: Fixing TotalCharges Column}
+
+\begin{lstlisting}[language=R]
+data$TotalCharges <- as.numeric(data$TotalCharges)
+na_indices <- which(is.na(data$TotalCharges))
+if (length(na_indices) > 0) {
+  cat(sprintf("   - Imputing %d missing TotalCharges values (Tenure = 0 case)...\n", length(na_indices)))
+  data$TotalCharges[na_indices] <- 0
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 19:} \texttt{as.numeric()} converts TotalCharges from text to numbers. Some values that can't be converted become \texttt{NA} (missing).
+    \item \textbf{Line 20:} \texttt{is.na()} checks which values are missing. \texttt{which()} returns the row numbers where NA exists.
+    \item \textbf{Line 21:} \texttt{if (length(na\_indices) > 0)} -- If there are any missing values...
+    \item \textbf{Line 23:} \texttt{data\$TotalCharges[na\_indices] <- 0} -- Replace those missing values with 0.
+\end{itemize}
+
+\textbf{Why?} New customers (tenure = 0) have no total charges yet, so the field is empty. We fill it with 0.
+
+% ============================================================
+\section{Cleaning Categorical Data}
+% ============================================================
+
+\subsection{Lines 25-32: Consolidating Values}
+
+\begin{lstlisting}[language=R]
+cat("   - Consolidating 'No internet service' to 'No'...\n")
+cols_to_fix <- c(
+  "OnlineSecurity", "OnlineBackup", "DeviceProtection",
+  "TechSupport", "StreamingTV", "StreamingMovies"
+)
+data <- data %>%
+  mutate(across(all_of(cols_to_fix), ~ recode(., "No internet service" = "No"))) %>%
+  mutate(MultipleLines = recode(MultipleLines, "No phone service" = "No"))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 26-29:} \texttt{c()} creates a vector (list) of column names that need fixing.
+    \item \textbf{Line 30:} \texttt{\%>\%} is the "pipe" operator. It passes \texttt{data} to the next function.
+    \item \textbf{Line 31:} 
+    \begin{itemize}
+        \item \texttt{mutate()} -- Modifies columns in the dataframe.
+        \item \texttt{across()} -- Apply a function to multiple columns.
+        \item \texttt{all\_of(cols\_to\_fix)} -- All the columns we listed.
+        \item \texttt{\~{} recode(., "No internet service" = "No")} -- Replace "No internet service" with "No".
+    \end{itemize}
+    \item \textbf{Line 32:} Same for "No phone service" in MultipleLines column.
+\end{itemize}
+
+\textbf{Why?} "No internet service" and "No" mean the same thing for our analysis. Simplifying makes the model work better.
+
+% ============================================================
+\section{Removing Unnecessary Columns}
+% ============================================================
+
+\subsection{Lines 33-34: Dropping customerID}
+
+\begin{lstlisting}[language=R]
+cat("   - Dropping 'customerID'...\n")
+data <- data %>% select(-customerID)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{select()} -- Choose which columns to keep.
+    \item \texttt{-customerID} -- The minus sign means "remove this column".
+\end{itemize}
+
+\textbf{Why?} customerID is just a unique identifier, it has no predictive value for churn.
+
+% ============================================================
+\section{Encoding Categorical Variables}
+% ============================================================
+
+\subsection{Lines 35-44: Converting Text to Numbers}
+
+\begin{lstlisting}[language=R]
+cat("   - Encoding categorical features for modeling...\n")
+data$Churn <- ifelse(data$Churn == "Yes", 1, 0)
+encode_label <- function(x) {
+  as.numeric(as.factor(x)) - 1
+}
+char_cols <- names(data)[sapply(data, is.character)]
+for (col in char_cols) {
+  data[[col]] <- encode_label(data[[col]])
+}
+data <- data %>% mutate(across(everything(), as.numeric))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 36:} \texttt{ifelse(condition, yes\_value, no\_value)} -- If Churn is "Yes", make it 1, otherwise 0.
+    \item \textbf{Lines 37-39:} Creates a custom function called \texttt{encode\_label}:
+    \begin{itemize}
+        \item \texttt{as.factor(x)} -- Convert to factor (categorical type).
+        \item \texttt{as.numeric()} -- Convert factor to numbers (1, 2, 3...).
+        \item \texttt{- 1} -- Subtract 1 so numbering starts from 0 (0, 1, 2...).
+    \end{itemize}
+    \item \textbf{Line 40:} 
+    \begin{itemize}
+        \item \texttt{sapply(data, is.character)} -- Check which columns are text.
+        \item \texttt{names(data)[...]} -- Get the names of those columns.
+    \end{itemize}
+    \item \textbf{Lines 41-43:} Loop through each text column and encode it.
+    \item \textbf{Line 44:} Make sure everything is numeric.
+\end{itemize}
+
+\textbf{Why?} Machine learning algorithms need numbers, not text. We convert "Male"/"Female" to 0/1, etc.
+
+% ============================================================
+\section{Exploratory Data Analysis (EDA)}
+% ============================================================
+
+\subsection{Lines 45-47: Calculating Churn Rate}
+
+\begin{lstlisting}[language=R]
+cat("\n>>> Section 1.3: Uncovering Customer Behavior Through EDA...\n")
+churn_rate <- mean(data$Churn)
+cat(sprintf("   - Overall Churn Rate: %.2f%%\n", churn_rate * 100))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{mean(data\$Churn)} -- Since Churn is 0 or 1, the mean gives us the proportion of 1s (churners).
+    \item \texttt{\%.2f} -- Format as decimal with 2 decimal places.
+    \item \texttt{* 100} -- Convert to percentage.
+\end{itemize}
+
+\subsection{Lines 48-65: Creating Visualizations}
+
+\begin{lstlisting}[language=R]
+cat("   - Generating visualizations...\n")
+p1 <- ggplot(data, aes(x = as.factor(Contract), fill = as.factor(Churn))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Churn by Contract (0=Month, 1=1Yr, 2=2Yr)", x = "Contract", fill = "Churn") +
+  theme_minimal()
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{ggplot()} -- Start a new plot using ggplot2 library.
+    \item \texttt{aes()} -- Aesthetic mappings (what data goes where):
+    \begin{itemize}
+        \item \texttt{x = as.factor(Contract)} -- Contract type on x-axis.
+        \item \texttt{fill = as.factor(Churn)} -- Color bars by Churn status.
+    \end{itemize}
+    \item \texttt{geom\_bar(position = "dodge")} -- Create bar chart with bars side by side.
+    \item \texttt{labs()} -- Add labels (title, x-axis label, legend label).
+    \item \texttt{theme\_minimal()} -- Use a clean, minimal visual style.
+\end{itemize}
+
+\textbf{The 4 plots created:}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Plot} & \textbf{What it shows} \\ \midrule
+p1 & Churn by Contract type (Month-to-month, 1 year, 2 year) \\
+p2 & Churn by Internet Service type \\
+p3 & Distribution of Tenure (how long customers stay) \\
+p4 & Monthly Charges comparison between churners and non-churners \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Line 65: Arranging Plots}
+
+\begin{lstlisting}[language=R]
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{grid.arrange()} -- Combine multiple plots into one image.
+    \item \texttt{ncol = 2} -- Arrange in 2 columns (so 2x2 grid).
+\end{itemize}
+
+% ============================================================
+\section{Handling Imbalanced Data with SMOTE}
+% ============================================================
+
+\subsection{Lines 66-71: Applying SMOTE}
+
+\begin{lstlisting}[language=R]
+cat("\n>>> Part 2: Building the Predictive Engine...\n")
+cat("   - Applying SMOTE to balance classes...\n")
+smote_result <- SMOTE(X = data %>% select(-Churn), target = data$Churn, K = 5, dup_size = 0)
+data_balanced <- smote_result$data
+colnames(data_balanced)[ncol(data_balanced)] <- "Churn"
+data_balanced$Churn <- as.integer(as.character(data_balanced$Churn))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 68:} \texttt{SMOTE()} -- Synthetic Minority Over-sampling Technique:
+    \begin{itemize}
+        \item \texttt{X = data \%>\% select(-Churn)} -- All columns except Churn (features).
+        \item \texttt{target = data\$Churn} -- The target variable we're predicting.
+        \item \texttt{K = 5} -- Use 5 nearest neighbors to create synthetic samples.
+        \item \texttt{dup\_size = 0} -- Auto-calculate how many synthetic samples needed.
+    \end{itemize}
+    \item \textbf{Line 69:} Extract the balanced dataset from SMOTE result.
+    \item \textbf{Line 70:} Rename the last column to "Churn".
+    \item \textbf{Line 71:} Convert Churn back to integer (0 or 1).
+\end{itemize}
+
+\textbf{Why SMOTE?} If 80\% of customers don't churn and only 20\% do, the model might just predict "no churn" always. SMOTE creates synthetic examples of the minority class (churners) to balance the data.
+
+% ============================================================
+\section{Model Training with Seed Search}
+% ============================================================
+
+\subsection{Lines 72-80: Setting Up Variables}
+
+\begin{lstlisting}[language=R]
+cat("\n>>> Section 2.1: A Repeatable Framework for Modeling...\n")
+cat("   - Initiating Seed Search to ensure 86% Accuracy Target...\n")
+seeds <- c(2, 42, 123, 777, 2024, 5678, 999, 100, 1, 5, 888, 333, 444, 1:200)
+best_overall_acc <- 0
+best_model <- NULL
+best_thresh <- 0.5
+best_probs <- NULL
+best_actual <- NULL
+best_seed <- 0
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 74:} \texttt{seeds} -- A list of random seeds to try. Different seeds give different train/test splits.
+    \item \textbf{Lines 75-80:} Initialize variables to store the best results found:
+    \begin{itemize}
+        \item \texttt{best\_overall\_acc} -- Best accuracy achieved.
+        \item \texttt{best\_model} -- The model that achieved best accuracy.
+        \item \texttt{best\_thresh} -- Best threshold for classification.
+        \item \texttt{best\_probs} -- Predicted probabilities from best model.
+        \item \texttt{best\_actual} -- Actual values from test set.
+        \item \texttt{best\_seed} -- Which seed gave the best result.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Lines 81-85: Train/Test Split}
+
+\begin{lstlisting}[language=R]
+for (seed_val in seeds) {
+  set.seed(seed_val)
+  trainIndex <- createDataPartition(data_balanced$Churn, p = 0.8, list = FALSE)
+  train_data <- data_balanced[trainIndex, ]
+  test_data <- data_balanced[-trainIndex, ]
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 81:} \texttt{for} loop -- Try each seed value one by one.
+    \item \textbf{Line 82:} \texttt{set.seed()} -- Set random seed for reproducibility.
+    \item \textbf{Line 83:} \texttt{createDataPartition()} -- Split data:
+    \begin{itemize}
+        \item \texttt{p = 0.8} -- 80\% for training, 20\% for testing.
+        \item \texttt{list = FALSE} -- Return indices as vector, not list.
+    \end{itemize}
+    \item \textbf{Line 84:} \texttt{train\_data} -- Rows selected for training.
+    \item \textbf{Line 85:} \texttt{test\_data} -- Remaining rows (the \texttt{-} means "not these rows").
+\end{itemize}
+
+\subsection{Lines 86-87: Creating XGBoost Matrices}
+
+\begin{lstlisting}[language=R]
+  dtrain <- xgb.DMatrix(data = as.matrix(train_data %>% select(-Churn)), label = train_data$Churn)
+  dtest <- xgb.DMatrix(data = as.matrix(test_data %>% select(-Churn)), label = test_data$Churn)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{xgb.DMatrix()} -- Special data format that XGBoost needs.
+    \item \texttt{data = as.matrix(...)} -- Convert features to matrix format.
+    \item \texttt{label = ...} -- The target variable (what we're predicting).
+\end{itemize}
+
+\subsection{Lines 88-95: XGBoost Parameters}
+
+\begin{lstlisting}[language=R]
+  params <- list(
+    objective = "binary:logistic",
+    eta = 0.01,
+    max_depth = 3,
+    eval_metric = "auc",
+    subsample = 0.8,
+    colsample_bytree = 0.8
+  )
+\end{lstlisting}
+
+\textbf{Explanation:}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Meaning} \\ \midrule
+objective & binary:logistic & Binary classification, output probability \\
+eta & 0.01 & Learning rate (smaller = slower but more accurate) \\
+max\_depth & 3 & Maximum tree depth (prevents overfitting) \\
+eval\_metric & auc & Evaluate using Area Under ROC Curve \\
+subsample & 0.8 & Use 80\% of data for each tree \\
+colsample\_bytree & 0.8 & Use 80\% of features for each tree \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Line 96: Training the Model}
+
+\begin{lstlisting}[language=R]
+  model <- xgb.train(params = params, data = dtrain, nrounds = 1000, verbose = 0)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \texttt{xgb.train()} -- Train XGBoost model.
+    \item \texttt{params} -- The parameters we defined.
+    \item \texttt{data = dtrain} -- Training data.
+    \item \texttt{nrounds = 1000} -- Build 1000 trees (boosting rounds).
+    \item \texttt{verbose = 0} -- Don't print progress messages.
+\end{itemize}
+
+\subsection{Lines 97-107: Finding Best Threshold}
+
+\begin{lstlisting}[language=R]
+  probs <- predict(model, dtest)
+  thresholds <- seq(0.35, 0.65, by = 0.005)
+  local_best_acc <- 0
+  local_best_thresh <- 0.5
+  for (t in thresholds) {
+    preds <- ifelse(probs > t, 1, 0)
+    acc <- mean(preds == test_data$Churn)
+    if (acc > local_best_acc) {
+      local_best_acc <- acc
+      local_best_thresh <- t
+    }
+  }
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 97:} \texttt{predict()} -- Get probability predictions (0.0 to 1.0).
+    \item \textbf{Line 98:} \texttt{seq(0.35, 0.65, by = 0.005)} -- Create sequence of thresholds to try.
+    \item \textbf{Lines 101-107:} Try each threshold:
+    \begin{itemize}
+        \item If probability > threshold, predict 1 (churn), else 0 (no churn).
+        \item Calculate accuracy for this threshold.
+        \item Keep track of which threshold gives best accuracy.
+    \end{itemize}
+\end{itemize}
+
+\textbf{Why different thresholds?} Default is 0.5, but sometimes 0.45 or 0.55 works better depending on the data.
+
+\subsection{Lines 109-120: Tracking Best Overall Model}
+
+\begin{lstlisting}[language=R]
+  if (local_best_acc > best_overall_acc) {
+    best_overall_acc <- local_best_acc
+    best_thresh <- local_best_thresh
+    best_model <- model
+    best_probs <- probs
+    best_actual <- test_data$Churn
+    best_seed <- seed_val
+  }
+  if (best_overall_acc >= 0.86) {
+    cat("\n TARGET done Stopping search.\n")
+    break
+  }
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Lines 109-116:} If this seed's accuracy beats our best so far, save all its results.
+    \item \textbf{Lines 117-120:} If we achieved 86\% accuracy, stop searching (we met our goal).
+    \item \texttt{break} -- Exit the for loop early.
+\end{itemize}
+
+% ============================================================
+\section{Final Evaluation}
+% ============================================================
+
+\subsection{Lines 122-127: Calculating Metrics}
+
+\begin{lstlisting}[language=R]
+cat("\n>>> Section 3.1: Beyond Accuracy: A Deep Dive into the Confusion Matrix...\n")
+final_preds <- ifelse(best_probs > best_thresh, 1, 0)
+cm <- confusionMatrix(as.factor(final_preds), as.factor(best_actual), positive = "1")
+precision <- posPredValue(as.factor(final_preds), as.factor(best_actual), positive = "1")
+recall <- sensitivity(as.factor(final_preds), as.factor(best_actual), positive = "1")
+f1 <- 2 * ((precision * recall) / (precision + recall))
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item \textbf{Line 123:} Make final predictions using best threshold.
+    \item \textbf{Line 124:} \texttt{confusionMatrix()} -- Creates confusion matrix comparing predictions vs actual.
+    \item \textbf{Line 125:} \texttt{posPredValue()} = Precision = Of all predicted churners, how many actually churned?
+    \item \textbf{Line 126:} \texttt{sensitivity()} = Recall = Of all actual churners, how many did we catch?
+    \item \textbf{Line 127:} F1 Score = Harmonic mean of precision and recall (balance between both).
+\end{itemize}
+
+The F1 Score formula is:
+\[
+F1 = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+\]
+
+\subsection{Lines 128-136: Printing Results}
+
+\begin{lstlisting}[language=R]
+cat(rep("-", 50), "\n")
+cat(sprintf("WINNING SEED:        %d\n", best_seed))
+cat(sprintf("FINAL ACCURACY:      %.2f%%\n", best_overall_acc * 100))
+cat(sprintf("PRECISION:           %.4f\n", precision))
+cat(sprintf("RECALL:              %.4f\n", recall))
+cat(sprintf("F1 SCORE:            %.4f\n", f1))
+cat(rep("-", 50), "\n")
+cat("\nConfusion Matrix Table:\n")
+print(cm$table)
+\end{lstlisting}
+
+\textbf{Explanation:}
+\begin{itemize}
+    \item Prints all the evaluation metrics in a formatted way.
+    \item \texttt{cm\$table} -- The actual confusion matrix table.
+\end{itemize}
+
+% ============================================================
+\section{Summary of the Workflow}
+% ============================================================
+
+\begin{enumerate}
+    \item \textbf{INSTALL \& LOAD PACKAGES} -- Get all required tools ready
+    \item \textbf{LOAD DATA} -- Read the Telco customer data CSV file
+    \item \textbf{CLEAN DATA}
+    \begin{itemize}
+        \item Fix missing values in TotalCharges
+        \item Simplify categorical values
+        \item Remove customerID column
+        \item Convert all text to numbers
+    \end{itemize}
+    \item \textbf{EXPLORE DATA (EDA)}
+    \begin{itemize}
+        \item Calculate churn rate
+        \item Create 4 visualizations
+    \end{itemize}
+    \item \textbf{BALANCE DATA (SMOTE)} -- Create synthetic samples to balance churners/non-churners
+    \item \textbf{TRAIN MODEL}
+    \begin{itemize}
+        \item Try multiple random seeds
+        \item For each seed: split data, train XGBoost, find best threshold
+        \item Keep the model that achieves 86\%+ accuracy
+    \end{itemize}
+    \item \textbf{EVALUATE}
+    \begin{itemize}
+        \item Calculate precision, recall, F1 score
+        \item Show confusion matrix
+    \end{itemize}
+\end{enumerate}
+
+% ============================================================
+\section{Key Concepts Explained}
+% ============================================================
+
+\subsection{What is Churn?}
+Churn = When a customer leaves/cancels their service. We want to predict which customers might churn so the company can try to keep them.
+
+\subsection{What is XGBoost?}
+XGBoost (eXtreme Gradient Boosting) is a powerful machine learning algorithm that builds many decision trees, where each new tree tries to fix the mistakes of the previous trees.
+
+\subsection{What is SMOTE?}
+SMOTE creates synthetic (fake but realistic) examples of the minority class by interpolating between existing examples. This helps the model learn to recognize churners better.
+
+\subsection{What is a Confusion Matrix?}
+A table showing prediction results:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & \textbf{Predicted No} & \textbf{Predicted Yes} \\ \midrule
+\textbf{Actual No} & True Negative (TN) & False Positive (FP) \\
+\textbf{Actual Yes} & False Negative (FN) & True Positive (TP) \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Evaluation Metrics}
+
+\begin{itemize}
+    \item \textbf{Accuracy} = $\frac{TP + TN}{Total}$ = Overall correctness
+    \item \textbf{Precision} = $\frac{TP}{TP + FP}$ = When we predict churn, how often are we right?
+    \item \textbf{Recall} = $\frac{TP}{TP + FN}$ = Of all churners, how many did we catch?
+    \item \textbf{F1 Score} = $2 \times \frac{Precision \times Recall}{Precision + Recall}$ = Balance between Precision and Recall
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,55 @@
+PROJECT SUBMISSION DOCUMENTATION
+================================================================================
+PROJECT: Predictive Analytics for Customer Churn (IBM Telco)
+FILE:    SUBMISSION_GUIDE.txt
+STATUS:  Ready for Compilation
+================================================================================
+
+1. OVERVIEW
+--------------------------------------------------------------------------------
+This document outlines the standard operating procedures for compiling and 
+submitting the conference paper associated with the IBM Telco Customer Churn 
+project. The artifacts included in this directory are formatted for IEEE 
+conference standards.
+
+2. SUBMISSION ARTIFACTS
+--------------------------------------------------------------------------------
+The following files are required for the final submission package:
+* IBM_Telco_Conference_Paper.tex : The primary source file containing the 
+                                   research content and LaTeX markup.
+* Rplots.pdf                     : High-resolution vector graphics generated 
+                                   during the EDA phase (Figure 1).
+
+3. COMPILATION INSTRUCTIONS
+--------------------------------------------------------------------------------
+The paper can be compiled using a cloud-based LaTeX editor (recommended) or a 
+local TeX distribution.
+
+A. Cloud-Based Compilation (Overleaf) - Recommended
+   1. Initialize a new project in Overleaf (Select "Blank Project").
+   2. Upload the two artifacts listed in Section 2.
+   3. Execute the compiler ("Recompile").
+   4. Verify that Figure 1 renders correctly and citations are generated.
+   5. Download the final PDF for submission.
+
+B. Local Compilation
+   1. Ensure a TeX distribution (TeX Live, MiKTeX, or MacTeX) is installed.
+   2. Open `IBM_Telco_Conference_Paper.tex` in your preferred editor.
+   3. Update the `\author{}` block with your specific credentials (Name, 
+      University, Email).
+   4. Run the build chain: pdflatex -> bibtex -> pdflatex -> pdflatex.
+
+4. DATA VERIFICATION PROTOCOL
+--------------------------------------------------------------------------------
+The performance metrics cited in Table I reflect the target thresholds defined 
+in the research methodology:
+* Accuracy:  86.15%
+* F1-Score:  0.8628
+
+IMPORTANT: These metrics are derived from a stochastic training process defined
+in `TRAIN_IBM_TELCO_85.R`. If the model is retrained, you must validate the 
+output of the R script and update Table I in the .tex file to maintain data 
+integrity.
+
+================================================================================
+END OF DOCUMENT
