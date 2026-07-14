@@ -1,3 +1,4 @@
+tryCatch({
 if (!require("smotefamily")) install.packages("smotefamily", repos = "http://cran.us.r-project.org")
 if (!require("xgboost")) install.packages("xgboost", repos = "http://cran.us.r-project.org")
 if (!require("caret")) install.packages("caret", repos = "http://cran.us.r-project.org")
@@ -346,3 +347,5 @@ cat("\n")
 cat(rep("=", 60), "\n")
 cat("   ANALYSIS COMPLETE — ALL SECTIONS FINISHED\n")
 cat(rep("=", 60), "\n")
+
+}, error = function(e) { message('Execution failed: ', e$message); quit(status = 1) })

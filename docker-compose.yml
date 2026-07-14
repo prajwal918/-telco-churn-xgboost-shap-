@@ -1,8 +1,21 @@
 version: '3.8'
+
 services:
-  app:
-    build: .
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: telco-churn-api:latest
+    container_name: telco-churn-api
     ports:
-      - "8080:80"
+      - "8000:8000"
     volumes:
-      - .:/app
+      - ./xgboost_churn_model.rds:/app/xgboost_churn_model.rds
+    environment:
+      - PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -1,3 +1,4 @@
+tryCatch({
 if (!require("tidyverse")) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if (!require("caret")) install.packages("caret", repos = "http://cran.us.r-project.org")
 if (!require("xgboost")) install.packages("xgboost", repos = "http://cran.us.r-project.org")
@@ -92,3 +93,5 @@ if (best_acc >= 0.87) {
     saveRDS(best_model, "Indian_Telecom/BEST_INDIAN_TELECOM_MODEL.rds")
     cat("Best model saved.\n")
 }
+
+}, error = function(e) { message('Execution failed: ', e$message); quit(status = 1) })
